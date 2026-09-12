@@ -1,0 +1,48 @@
+{
+  "app": {
+    "title": "Steamhub",
+    "subtitle": "GitHub-Style Steam Playtime Contribution Tracker",
+    "badge": "Real-time ETL"
+  },
+  "auth": {
+    "login": "Sign in with Steam",
+    "logout": "Sign Out",
+    "authenticated_as": "Connected as",
+    "untracked_warning": "Connect your Steam account to start tracking daily playtime."
+  },
+  "heatmap": {
+    "title": "Playtime Activity",
+    "subheading": "Tracked activity since account connection",
+    "total_year": "Total Tracked in",
+    "hours": "hrs",
+    "minutes": "mins",
+    "untracked_tile": "Not tracked yet",
+    "untracked_desc": "Account was connected on",
+    "no_playtime": "0 mins played",
+    "played": "played",
+    "top_game": "Top Game",
+    "legend_less": "Less",
+    "legend_more": "More",
+    "legend_untracked": "Pre-connection",
+    "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    "days": ["Mon", "Wed", "Fri"]
+  },
+  "status": {
+    "public": "Public Profile",
+    "private": "Private Profile (Action Required)",
+    "private_notice": "Your Steam Profile or Game Details are currently set to Private. Steamhub cannot poll your playtime.",
+    "private_steps": "To fix this: Go to Steam Profile → Edit Profile → Privacy Settings → Set 'Game details' to Public.",
+    "last_polled": "Last Polled",
+    "never_polled": "Never",
+    "polling_now": "Polling Steam...",
+    "poll_button": "Sync Playtime",
+    "cooldown_active": "Cooldown"
+  },
+  "games": {
+    "title": "Tracked Games Breakdown",
+    "subheading": "Lifetime playtime tracked by Steamhub",
+    "lifetime_hours": "Lifetime Tracked",
+    "last_played": "Last Active",
+    "no_games": "No game activity recorded yet. Play games on Steam and click Sync Playtime!"
+  }
+}
