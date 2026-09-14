@@ -13,8 +13,9 @@ interface StatusBannerProps {
 }
 
 export const StatusBanner: React.FC<StatusBannerProps> = ({ visibilityState }) => {
-  // If visibilityState is 3 (public) or undefined, do not show warning
-  if (visibilityState === 3 || visibilityState === undefined) {
+  // Only display privacy warning when explicitly private (1 = Private, 2 = FriendsOnly)
+  // If 3 (Public) or null/undefined, do not show false-positive warning
+  if (visibilityState !== 1 && visibilityState !== 2) {
     return null;
   }
 

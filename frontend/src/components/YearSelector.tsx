@@ -1,11 +1,11 @@
 /**
  * @file YearSelector.tsx
- * @description Year filter tabs with aggregate annual hours, active days, and streaks
+ * @description Year filter tabs with enlarged aggregate annual hours, active days, and sleek gaming metrics
  * @module frontend/components
  */
 
 import React from "react";
-import { Calendar, Clock, Flame } from "lucide-react";
+import { Calendar, Timer, Trophy } from "lucide-react";
 import en from "../locales/en.json";
 
 interface YearSelectorProps {
@@ -23,7 +23,8 @@ export const YearSelector: React.FC<YearSelectorProps> = ({
   activeDaysCount,
   onSelectYear,
 }) => {
-  const totalHours = Math.floor(totalYearMinutes / 60);
+  const totalHours = (totalYearMinutes / 60).toFixed(1);
+  const totalHoursInt = Math.floor(totalYearMinutes / 60);
   const remainingMinutes = totalYearMinutes % 60;
 
   return (
@@ -37,26 +38,35 @@ export const YearSelector: React.FC<YearSelectorProps> = ({
           >
             <Calendar size={16} />
             <span>{yr}</span>
+            {selectedYear === yr && <div className="year-tab-indicator" />}
           </button>
         ))}
       </div>
 
       <div className="year-metrics">
-        <div className="metric-pill">
-          <Clock size={16} className="text-steam-cyan" />
+        <div className="metric-pill metric-hours">
+          <div className="metric-icon-box cyan">
+            <Timer size={20} />
+          </div>
           <div className="metric-text">
             <span className="metric-label">{en.heatmap.total_year} {selectedYear}</span>
-            <strong className="metric-value">
-              {totalHours} {en.heatmap.hours} {remainingMinutes > 0 ? `${remainingMinutes} ${en.heatmap.minutes}` : ""}
-            </strong>
+            <div className="metric-value-row">
+              <strong className="metric-value text-glow-cyan">{totalHours} hrs</strong>
+              <span className="metric-value-sub">({totalHoursInt}h {remainingMinutes}m)</span>
+            </div>
           </div>
         </div>
 
-        <div className="metric-pill">
-          <Flame size={16} className="text-steam-green" />
+        <div className="metric-pill metric-days">
+          <div className="metric-icon-box emerald">
+            <Trophy size={20} />
+          </div>
           <div className="metric-text">
             <span className="metric-label">Active Gaming Days</span>
-            <strong className="metric-value">{activeDaysCount} days</strong>
+            <div className="metric-value-row">
+              <strong className="metric-value text-glow-green">{activeDaysCount} days</strong>
+              <span className="metric-value-sub">recorded</span>
+            </div>
           </div>
         </div>
       </div>

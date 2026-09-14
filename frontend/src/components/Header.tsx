@@ -1,21 +1,21 @@
 /**
  * @file Header.tsx
- * @description Application top navigation bar with user profile, Steam sync button, and auth controls
+ * @description Application top navigation bar with authentic Steam brand vector, user profile, sync button, and auth controls
  * @module frontend/components
  */
 
 import React, { useEffect, useState } from "react";
 import {
-  Activity,
-  Flame,
   Globe,
   Lock,
   LogOut,
   RefreshCw,
   Sparkles,
+  Zap,
 } from "lucide-react";
 import type { User, UserStatus } from "../types";
 import { getSteamLoginUrl } from "../api/client";
+import { SteamAvatarFallback, SteamLogo } from "./SteamIcons";
 import en from "../locales/en.json";
 
 interface HeaderProps {
@@ -63,19 +63,34 @@ export const Header: React.FC<HeaderProps> = ({
 
   const isPollDisabled = isPolling || (countdown > 0 && !isDemoMode);
 
+  // Profile visibility status interpretation
+  const isExplicitlyPrivate =
+    user?.profile_visibility_state === 1 || user?.profile_visibility_state === 2;
+
   return (
     <header className="header-container">
+      <div className="header-glow-bar" />
       <div className="header-content">
         {/* Brand & Title */}
         <div className="brand-section">
           <div className="brand-logo">
-            <Flame className="logo-icon text-steam-cyan" size={28} />
+            <div className="brand-logo-inner">
+              <SteamLogo size={26} className="logo-icon text-steam-cyan" />
+            </div>
           </div>
           <div>
             <div className="brand-title-row">
               <h1 className="brand-title">{en.app.title}</h1>
-              <span className="badge-pulse">{en.app.badge}</span>
-              {isDemoMode && <span className="badge-demo">Demo Mode</span>}
+              <span className="badge-pulse">
+                <span className="pulse-dot" />
+                {en.app.badge}
+              </span>
+              {isDemoMode && (
+                <span className="badge-demo">
+                  <Zap size={11} />
+                  Demo Mode
+                </span>
+              )}
             </div>
             <p className="brand-subtitle">{en.app.subtitle}</p>
           </div>
@@ -86,23 +101,33 @@ export const Header: React.FC<HeaderProps> = ({
           {user ? (
             <div className="user-profile-bar">
               <div className="user-info">
-                <img
-                  src={user.avatar_url || "https://avatars.steamstatic.com/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg"}
-                  alt={user.persona_name}
-                  className="user-avatar"
-                />
+                <div className="user-avatar-wrapper">
+                  {user.avatar_url ? (
+                    <img
+                      src={user.avatar_url}
+                      alt={user.persona_name || "Steam Profile"}
+                      className="user-avatar"
+                      onError={(e) => {
+                        (e.target as HTMLElement).style.display = "none";
+                      }}
+                    />
+                  ) : (
+                    <SteamAvatarFallback size={40} />
+                  )}
+                  <div className="avatar-status-ring" />
+                </div>
                 <div className="user-details">
                   <div className="user-name-row">
-                    <span className="user-name">{user.persona_name || "Steam Player"}</span>
-                    {user.profile_visibility_state === 3 ? (
-                      <span className="visibility-badge public" title="Public Profile">
-                        <Globe size={12} />
-                        Public
+                    <span className="user-name">{user.persona_name || `Steam Player`}</span>
+                    {isExplicitlyPrivate ? (
+                      <span className="visibility-badge private" title="Private Profile">
+                        <Lock size={11} />
+                        Private
                       </span>
                     ) : (
-                      <span className="visibility-badge private" title="Private Profile">
-                        <Lock size={12} />
-                        Private
+                      <span className="visibility-badge public" title="Public Profile">
+                        <Globe size={11} />
+                        Public
                       </span>
                     )}
                   </div>
@@ -118,7 +143,7 @@ export const Header: React.FC<HeaderProps> = ({
                 className={`btn-sync ${isPolling ? "polling" : ""}`}
                 title={countdown > 0 ? `Cooldown active (${formatCountdown(countdown)})` : "Sync playtime from Steam"}
               >
-                <RefreshCw size={16} className={isPolling ? "spin" : ""} />
+                <RefreshCw size={15} className={isPolling ? "spin" : ""} />
                 <span>
                   {isPolling
                     ? en.status.polling_now
@@ -135,7 +160,7 @@ export const Header: React.FC<HeaderProps> = ({
                 className="btn-secondary"
                 title={en.auth.logout}
               >
-                <LogOut size={16} />
+                <LogOut size={15} />
               </button>
             </div>
           ) : (
@@ -145,7 +170,7 @@ export const Header: React.FC<HeaderProps> = ({
                 onClick={onToggleDemo}
                 className="btn-demo"
               >
-                <Sparkles size={16} />
+                <Sparkles size={15} />
                 <span>{isDemoMode ? "Live Mode" : "Try Interactive Demo"}</span>
               </button>
 
@@ -154,7 +179,7 @@ export const Header: React.FC<HeaderProps> = ({
                 href={getSteamLoginUrl()}
                 className="btn-steam-login"
               >
-                <Activity size={18} />
+                <SteamLogo size={18} />
                 <span>{en.auth.login}</span>
               </a>
             </div>

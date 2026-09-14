@@ -1,11 +1,11 @@
 /**
  * @file Heatmap.tsx
- * @description 52-week contribution heatmap rendering 3 distinct states (untracked, zero-activity, activity tiers) with rich tooltips
+ * @description 52-week contribution heatmap rendering 3 distinct states with larger tiles, rich tooltips, and live HUD inspection
  * @module frontend/components
  */
 
 import React, { useMemo, useState } from "react";
-import { Clock, Gamepad2, Info } from "lucide-react";
+import { Clock, Gamepad2, Info, Sparkles, Swords, Zap } from "lucide-react";
 import type { HeatmapDayItem, TopGameInfo } from "../types";
 import en from "../locales/en.json";
 
@@ -25,15 +25,18 @@ interface CellData {
   state: "untracked" | "zero" | "tier1" | "tier2" | "tier3" | "tier4";
 }
 
-interface TooltipState {
-  visible: boolean;
-  x: number;
-  y: number;
+interface HoverData {
   dateStr: string;
   formattedDate: string;
   totalMinutes: number;
   topGame: TopGameInfo | null;
   state: string;
+}
+
+interface TooltipState extends HoverData {
+  visible: boolean;
+  x: number;
+  y: number;
 }
 
 export const Heatmap: React.FC<HeatmapProps> = ({
@@ -51,6 +54,8 @@ export const Heatmap: React.FC<HeatmapProps> = ({
     topGame: null,
     state: "zero",
   });
+
+  const [activeHover, setActiveHover] = useState<HoverData | null>(null);
 
   // Index days by YYYY-MM-DD
   const daysMap = useMemo(() => {
@@ -150,62 +155,103 @@ export const Heatmap: React.FC<HeatmapProps> = ({
       timeZone: "UTC",
     });
 
-    setTooltip({
-      visible: true,
-      x: rect.left + rect.width / 2,
-      y: rect.top - 12,
+    const hoverPayload: HoverData = {
       dateStr: cell.dateStr,
       formattedDate: formatted,
       totalMinutes: cell.totalMinutes,
       topGame: cell.topGame,
       state: cell.state,
+    };
+
+    setActiveHover(hoverPayload);
+
+    setTooltip({
+      ...hoverPayload,
+      visible: true,
+      x: rect.left + rect.width / 2,
+      y: rect.top - 14,
     });
   };
 
   const handleMouseLeave = () => {
     setTooltip((prev) => ({ ...prev, visible: false }));
+    setActiveHover(null);
   };
 
-  const formatPlaytime = (mins: number) => {
+  const formatHoursDecimal = (mins: number) => {
+    const hours = (mins / 60).toFixed(1);
+    return `${hours} hrs`;
+  };
+
+  const formatPlaytimeDetail = (mins: number) => {
     const hours = Math.floor(mins / 60);
     const remainingMins = mins % 60;
     if (hours === 0) return `${remainingMins} mins`;
     if (remainingMins === 0) return `${hours} hrs`;
-    return `${hours} hrs ${remainingMins} mins`;
+    return `${hours}h ${remainingMins}m`;
   };
 
-  const cellSize = 13;
-  const cellGap = 3;
+  // Expanded larger tile size for prominent center presentation
+  const cellSize = 16.5;
+  const cellGap = 4;
   const colWidth = cellSize + cellGap;
   const rowHeight = cellSize + cellGap;
 
   return (
     <div className="heatmap-card">
       <div className="heatmap-header">
-        <div>
-          <h2 className="heatmap-title">{en.heatmap.title}</h2>
+        <div className="heatmap-title-block">
+          <div className="heatmap-title-row">
+            <Swords size={22} className="text-steam-cyan" />
+            <h2 className="heatmap-title">{en.heatmap.title}</h2>
+            <div className="live-pulse-dot" />
+          </div>
           <p className="heatmap-subtitle">{en.heatmap.subheading}</p>
         </div>
-        <div className="connection-info">
-          <Info size={14} className="text-steam-cyan" />
-          <span>
-            Connected since: <strong>{connectionDateStr}</strong>
-          </span>
-        </div>
+
+        {/* Live Hover HUD or Connected Status */}
+        {activeHover ? (
+          <div className="live-hover-hud">
+            <Sparkles size={16} className="text-steam-green animate-pulse" />
+            <span className="live-hud-date">{activeHover.formattedDate}:</span>
+            {activeHover.state === "untracked" ? (
+              <span className="live-hud-untracked">Pre-connection</span>
+            ) : activeHover.totalMinutes === 0 ? (
+              <span className="live-hud-zero">0.0 hrs played</span>
+            ) : (
+              <span className="live-hud-active">
+                <strong>{formatHoursDecimal(activeHover.totalMinutes)}</strong>
+                <span className="live-hud-sub"> ({formatPlaytimeDetail(activeHover.totalMinutes)})</span>
+                {activeHover.topGame && (
+                  <span className="live-hud-game">
+                    {" "}• {activeHover.topGame.name} ({(activeHover.topGame.minutes_played / 60).toFixed(1)} hrs)
+                  </span>
+                )}
+              </span>
+            )}
+          </div>
+        ) : (
+          <div className="connection-info">
+            <Info size={15} className="text-steam-cyan" />
+            <span>
+              Connected since: <strong>{connectionDateStr}</strong>
+            </span>
+          </div>
+        )}
       </div>
 
       <div className="heatmap-svg-wrapper">
         <svg
-          width={gridWeeks.length * colWidth + 50}
-          height={7 * rowHeight + 35}
+          width={gridWeeks.length * colWidth + 60}
+          height={7 * rowHeight + 46}
           className="heatmap-svg"
         >
           <defs>
             {/* Pattern for untracked days */}
             <pattern
               id="untracked-stripe"
-              width="4"
-              height="4"
+              width="6"
+              height="6"
               patternUnits="userSpaceOnUse"
               patternTransform="rotate(45)"
             >
@@ -213,15 +259,15 @@ export const Heatmap: React.FC<HeatmapProps> = ({
                 x1="0"
                 y1="0"
                 x2="0"
-                y2="4"
-                stroke="#2a3847"
-                strokeWidth="1.5"
+                y2="6"
+                stroke="#202b3c"
+                strokeWidth="2.2"
               />
             </pattern>
           </defs>
 
           {/* Month Labels */}
-          <g className="month-labels" transform="translate(36, 12)">
+          <g className="month-labels" transform="translate(42, 14)">
             {monthLabels.map((m, i) => (
               <text
                 key={i}
@@ -235,20 +281,20 @@ export const Heatmap: React.FC<HeatmapProps> = ({
           </g>
 
           {/* Day of Week Labels */}
-          <g className="day-labels" transform="translate(0, 24)">
-            <text x="5" y={1 * rowHeight + 10} className="heatmap-day-text">
+          <g className="day-labels" transform="translate(4, 29)">
+            <text x="0" y={1 * rowHeight + 13} className="heatmap-day-text">
               Mon
             </text>
-            <text x="5" y={3 * rowHeight + 10} className="heatmap-day-text">
+            <text x="0" y={3 * rowHeight + 13} className="heatmap-day-text">
               Wed
             </text>
-            <text x="5" y={5 * rowHeight + 10} className="heatmap-day-text">
+            <text x="0" y={5 * rowHeight + 13} className="heatmap-day-text">
               Fri
             </text>
           </g>
 
           {/* Grid Cells */}
-          <g transform="translate(36, 20)">
+          <g transform="translate(42, 24)">
             {gridWeeks.map((week, wIndex) =>
               week.map((cell) => {
                 const x = wIndex * colWidth;
@@ -260,7 +306,7 @@ export const Heatmap: React.FC<HeatmapProps> = ({
                     y={y}
                     width={cellSize}
                     height={cellSize}
-                    rx={2.5}
+                    rx={4}
                     className={`heatmap-cell cell-${cell.state}`}
                     fill={
                       cell.state === "untracked"
@@ -281,21 +327,21 @@ export const Heatmap: React.FC<HeatmapProps> = ({
       <div className="heatmap-footer">
         <div className="legend-group">
           <span className="legend-label">{en.heatmap.legend_untracked}</span>
-          <div className="legend-cell untracked" title="Not tracked yet" />
+          <div className="legend-cell untracked" title="Not tracked yet (Before account connection)" />
         </div>
 
         <div className="legend-scale">
           <span className="legend-label">{en.heatmap.legend_less}</span>
-          <div className="legend-cell zero" title="0 mins" />
-          <div className="legend-cell tier1" title="< 30 mins" />
-          <div className="legend-cell tier2" title="30m - 2 hrs" />
-          <div className="legend-cell tier3" title="2 hrs - 5 hrs" />
+          <div className="legend-cell zero" title="0 hrs" />
+          <div className="legend-cell tier1" title="< 0.5 hrs (< 30 mins)" />
+          <div className="legend-cell tier2" title="0.5 - 2 hrs" />
+          <div className="legend-cell tier3" title="2 - 5 hrs" />
           <div className="legend-cell tier4" title="5+ hrs" />
           <span className="legend-label">{en.heatmap.legend_more}</span>
         </div>
       </div>
 
-      {/* Dynamic Hover Tooltip */}
+      {/* Dynamic Hover Tooltip displaying number of hours played */}
       {tooltip.visible && (
         <div
           className="heatmap-tooltip"
@@ -315,28 +361,34 @@ export const Heatmap: React.FC<HeatmapProps> = ({
               <div className="tooltip-untracked">
                 <Clock size={14} className="text-slate-400" />
                 <span>
-                  {en.heatmap.untracked_tile} ({en.heatmap.untracked_desc}{" "}
-                  {connectionDateStr})
+                  {en.heatmap.untracked_tile} (Joined {connectionDateStr})
                 </span>
               </div>
             ) : tooltip.totalMinutes === 0 ? (
               <div className="tooltip-zero">
+                <span className="tooltip-hours-badge zero">0.0 hrs</span>
                 <span>{en.heatmap.no_playtime}</span>
               </div>
             ) : (
               <div className="tooltip-active">
-                <div className="tooltip-total">
-                  <Clock size={14} className="text-steam-green" />
-                  <strong>{formatPlaytime(tooltip.totalMinutes)}</strong>
-                  <span>{en.heatmap.played}</span>
+                <div className="tooltip-hours-hero-row">
+                  <div className="tooltip-hours-badge active">
+                    <Zap size={14} className="text-steam-green" />
+                    <strong>{formatHoursDecimal(tooltip.totalMinutes)}</strong>
+                  </div>
+                  <span className="tooltip-minutes-sub">
+                    ({formatPlaytimeDetail(tooltip.totalMinutes)} total)
+                  </span>
                 </div>
+
                 {tooltip.topGame && (
                   <div className="tooltip-top-game">
                     <Gamepad2 size={14} className="text-steam-cyan" />
-                    <span>
-                      {en.heatmap.top_game}:{" "}
-                      <strong>{tooltip.topGame.name}</strong> (
-                      {formatPlaytime(tooltip.topGame.minutes_played)})
+                    <span className="tooltip-top-game-name">
+                      {tooltip.topGame.name}
+                    </span>
+                    <span className="tooltip-top-game-hours">
+                      {(tooltip.topGame.minutes_played / 60).toFixed(1)} hrs
                     </span>
                   </div>
                 )}
