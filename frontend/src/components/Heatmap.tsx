@@ -142,8 +142,8 @@ export const Heatmap: React.FC<HeatmapProps> = ({
     return { gridWeeks: weeks, monthLabels: months };
   }, [year, connectionDateStr, daysMap]);
 
-  const handleMouseEnter = (
-    e: React.MouseEvent<SVGRectElement>,
+  const handleCellInteraction = (
+    e: React.MouseEvent<SVGRectElement> | React.TouchEvent<SVGRectElement>,
     cell: CellData
   ) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -165,12 +165,31 @@ export const Heatmap: React.FC<HeatmapProps> = ({
 
     setActiveHover(hoverPayload);
 
+    // Keep tooltip clamped inside viewport on small mobile screens
+    const rawX = rect.left + rect.width / 2;
+    const padding = 125;
+    const clampedX = Math.max(padding, Math.min(window.innerWidth - padding, rawX));
+
     setTooltip({
       ...hoverPayload,
       visible: true,
-      x: rect.left + rect.width / 2,
+      x: clampedX,
       y: rect.top - 14,
     });
+  };
+
+  const handleMouseEnter = (
+    e: React.MouseEvent<SVGRectElement>,
+    cell: CellData
+  ) => {
+    handleCellInteraction(e, cell);
+  };
+
+  const handleClick = (
+    e: React.MouseEvent<SVGRectElement> | React.TouchEvent<SVGRectElement>,
+    cell: CellData
+  ) => {
+    handleCellInteraction(e, cell);
   };
 
   const handleMouseLeave = () => {
@@ -315,6 +334,8 @@ export const Heatmap: React.FC<HeatmapProps> = ({
                     }
                     onMouseEnter={(e) => handleMouseEnter(e, cell)}
                     onMouseLeave={handleMouseLeave}
+                    onClick={(e) => handleClick(e, cell)}
+                    onTouchEnd={(e) => handleClick(e, cell)}
                   />
                 );
               })

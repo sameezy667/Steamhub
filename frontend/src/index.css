@@ -376,6 +376,12 @@ button, a.btn-steam-login {
   text-decoration: none;
 }
 
+.user-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .btn-sync {
   display: flex;
   align-items: center;
@@ -1045,7 +1051,7 @@ button, a.btn-steam-login {
 
 .games-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
   gap: 18px;
 }
 
@@ -1322,22 +1328,357 @@ button, a.btn-steam-login {
   box-shadow: 0 0 20px rgba(245, 158, 11, 0.35);
 }
 
-/* Responsive queries */
-@media (max-width: 768px) {
-  .header-content {
-    flex-direction: column;
-    align-items: flex-start;
+/* ==========================================================================
+   Comprehensive Responsive System (Mobile View Improvements & Cut-off Fixes)
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+  .main-content {
+    padding: 24px 20px 60px 20px;
+    gap: 24px;
   }
+
+  .year-selector-card {
+    padding: 16px 20px;
+    gap: 16px;
+  }
+
+  .heatmap-card {
+    padding: 24px 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 16px 14px 48px 14px;
+    gap: 18px;
+  }
+
+  /* Header adjustments */
+  .header-content {
+    padding: 12px 14px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  .brand-section {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .brand-title-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .brand-title {
+    font-size: 20px;
+  }
+
+  .brand-subtitle {
+    font-size: 12px;
+  }
+
   .header-actions {
+    width: 100%;
+  }
+
+  .user-profile-bar {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: var(--radius-lg);
+  }
+
+  .user-info {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .user-actions-group {
+    display: flex;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .user-actions-group .btn-sync {
+    flex: 1;
+    justify-content: center;
+    padding: 8px 14px;
+    font-size: 12.5px;
+  }
+
+  .auth-buttons {
+    width: 100%;
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .auth-buttons .btn-demo,
+  .auth-buttons .btn-steam-login {
+    flex: 1;
+    justify-content: center;
+    padding: 9px 12px;
+    font-size: 12.5px;
+    text-align: center;
+  }
+
+  /* Status Banner */
+  .status-banner-card {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+    border-radius: var(--radius-lg);
+    gap: 14px;
+  }
+
+  .banner-icon-container {
+    align-self: flex-start;
+    padding: 10px;
+  }
+
+  .banner-title-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .banner-steps {
+    flex-wrap: wrap;
+    word-break: break-word;
+  }
+
+  .banner-action {
+    width: 100%;
+  }
+
+  .btn-privacy-link {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Year Selector */
+  .year-selector-card {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 14px 16px;
+    border-radius: var(--radius-lg);
+    gap: 14px;
+  }
+
+  .year-tabs {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+  }
+
+  .year-tab {
+    flex: 1;
+    justify-content: center;
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .year-metrics {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .metric-pill {
+    padding: 10px 12px;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .metric-icon-box {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+  }
+
+  .metric-value {
+    font-size: 15px;
+  }
+
+  .metric-value-sub {
+    font-size: 11px;
+  }
+
+  /* Heatmap Card */
+  .heatmap-card {
+    padding: 16px 14px;
+    border-radius: var(--radius-lg);
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .heatmap-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .heatmap-title-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .heatmap-title {
+    font-size: 18px;
+  }
+
+  .live-hover-hud {
+    width: 100%;
+    flex-wrap: wrap;
+    padding: 8px 12px;
+    border-radius: var(--radius-md);
+    font-size: 12px;
+    word-break: break-word;
+    box-sizing: border-box;
+  }
+
+  .connection-info {
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: var(--radius-md);
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .heatmap-svg-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 10px 0 16px 0;
+  }
+
+  .heatmap-footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    margin-top: 14px;
+  }
+
+  .legend-group,
+  .legend-scale {
     width: 100%;
     justify-content: space-between;
   }
-  .status-banner-card {
-    flex-direction: column;
-    align-items: flex-start;
+
+  /* Games Breakdown Grid */
+  .games-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
-  .year-selector-card {
+
+  .game-card {
+    padding: 14px;
+    border-radius: var(--radius-md);
+    gap: 12px;
+  }
+
+  .game-card-left {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .game-info {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .game-icon,
+  .game-icon-fallback {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+  }
+
+  .game-name {
+    font-size: 14px;
+  }
+
+  .game-card-right {
+    flex-shrink: 0;
+  }
+
+  .stat-value {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    padding: 12px 10px 40px 10px;
+    gap: 14px;
+  }
+
+  .header-content {
+    padding: 10px 10px;
+  }
+
+  .brand-logo {
+    width: 38px;
+    height: 38px;
+  }
+
+  .brand-title {
+    font-size: 18px;
+  }
+
+  .auth-buttons {
     flex-direction: column;
-    align-items: flex-start;
+    width: 100%;
+  }
+
+  .auth-buttons .btn-demo,
+  .auth-buttons .btn-steam-login {
+    width: 100%;
+  }
+
+  .year-metrics {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .metric-pill {
+    padding: 8px 12px;
+  }
+
+  .game-card {
+    padding: 12px;
+  }
+
+  .game-name {
+    max-width: 140px;
+  }
+
+  .heatmap-tooltip {
+    max-width: calc(100vw - 24px);
+    padding: 10px 14px;
+    min-width: 200px;
+  }
+}
+
+@media (max-width: 360px) {
+  .brand-title {
+    font-size: 16px;
+  }
+
+  .badge-pulse,
+  .badge-demo {
+    font-size: 10px;
+    padding: 1px 7px;
+  }
+
+  .game-name {
+    max-width: 100px;
   }
 }

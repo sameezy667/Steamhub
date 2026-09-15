@@ -135,33 +135,36 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
               </div>
 
-              {/* Sync Poll Button */}
-              <button
-                id="manual-poll-btn"
-                onClick={onManualPoll}
-                disabled={isPollDisabled}
-                className={`btn-sync ${isPolling ? "polling" : ""}`}
-                title={countdown > 0 ? `Cooldown active (${formatCountdown(countdown)})` : "Sync playtime from Steam"}
-              >
-                <RefreshCw size={15} className={isPolling ? "spin" : ""} />
-                <span>
-                  {isPolling
-                    ? en.status.polling_now
-                    : countdown > 0
-                    ? `${en.status.cooldown_active} (${formatCountdown(countdown)})`
-                    : en.status.poll_button}
-                </span>
-              </button>
+              {/* Action Buttons Group */}
+              <div className="user-actions-group">
+                {/* Sync Poll Button */}
+                <button
+                  id="manual-poll-btn"
+                  onClick={onManualPoll}
+                  disabled={isPollDisabled}
+                  className={`btn-sync ${isPolling ? "polling" : ""}`}
+                  title={countdown > 0 ? `Cooldown active (${formatCountdown(countdown)})` : "Sync playtime from Steam"}
+                >
+                  <RefreshCw size={15} className={isPolling ? "spin" : ""} />
+                  <span>
+                    {isPolling
+                      ? en.status.polling_now
+                      : countdown > 0
+                      ? `${en.status.cooldown_active} (${formatCountdown(countdown)})`
+                      : en.status.poll_button}
+                  </span>
+                </button>
 
-              {/* Logout Button */}
-              <button
-                id="logout-btn"
-                onClick={onLogout}
-                className="btn-secondary"
-                title={en.auth.logout}
-              >
-                <LogOut size={15} />
-              </button>
+                {/* Logout Button */}
+                <button
+                  id="logout-btn"
+                  onClick={onLogout}
+                  className="btn-secondary"
+                  title={en.auth.logout}
+                >
+                  <LogOut size={15} />
+                </button>
+              </div>
             </div>
           ) : (
             <div className="auth-buttons">
